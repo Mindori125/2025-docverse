@@ -32,7 +32,7 @@ cp .env.example .env
 
 # 3. 개발 서버 실행
 npm run dev
-
+```
 ## 디렉토리 구조
 
 ```
