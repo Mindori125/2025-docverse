@@ -61,10 +61,10 @@ export default function Home() {
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 border border-black rounded-sm" />
             <h1 className="text-xl font-bold text-purple-600">
-              <a href="/">test</a>
+              <a href="/">Docverse</a>
             </h1>
           </div>
-          <ul className="flex space-x-10 text-gray-700 font-medium">
+          <ul className="flex space-x-60 text-gray-700 font-medium">
             {['공지사항', '도움말', '그룹'].map((text, idx) => (
               <li key={idx}>
                 <a href="#" className="hover:text-purple-600 transition-colors">{text}</a>
@@ -138,7 +138,7 @@ export default function Home() {
         </motion.div>
       </main>
 
-      <footer className="bg-purple-100 text-gray-700 text-xs text-center p-2 border-t">
+      <footer className="bg-purple-100 text-gray-700 text-xs text-center p-1 border-t">
         <p>© 2025 Reverse Website Project</p>
       </footer>
 
