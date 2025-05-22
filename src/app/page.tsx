@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation'
 
 const guides = [
   { title: '아이디어 공유하기', description: '나만의 생각을 자유롭게 올리고 의견을 받아보세요.' },
@@ -14,6 +15,7 @@ export default function Home() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const guideRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +36,8 @@ export default function Home() {
   };
 
   return (
+    <div className="relative overflow-hidden">
+     <div className="rainbow-background" />
     <div className="min-h-[300vh] flex flex-col relative overflow-hidden select-none">
       {/* Blob 배경 */}
       <div className="absolute top-0 left-0 -z-10 w-full h-full overflow-hidden">
@@ -48,59 +52,63 @@ export default function Home() {
             }}
           />
         ))}
-      </div>
+      </div>  
 
       {/* 네비게이션 바 */}
       <motion.nav
-        initial={{ y: 0 }}
-        animate={{ y: showNav ? 0 : -100 }}
-        transition={{ duration: 0.3 }}
-        className="bg-white shadow-md fixed top-0 w-full z-50"
+  initial={{ y: 0 }}
+  animate={{ y: showNav ? 0 : -100 }}
+  transition={{ duration: 0.3 }}
+  className="bg-white shadow-md fixed top-0 w-full z-50"
+>
+  <div className="w-full px-4 sm:px-6 py-3 flex justify-between items-center">
+    <div className="flex items-center space-x-2">
+    <h1 className="text-2xl font-bold font-KakaoBig bg-gradient-to-r from-purple-800 to-purple-500 bg-clip-text text-transparent">
+       <a href="/">Docverse</a>
+    </h1>
+    </div>
+    <ul className="flex space-x-60  text-gray-700 font-medium">
+      {['공지사항', '도움말', '그룹'].map((text, idx) => (
+        <li key={idx}>
+          <a href="#" className="hover:text-purple-600 font-KakaoBig transition-colors">{text}</a>
+        </li>
+      ))}
+    </ul>
+    <div>
+      <button
+        onClick={() => router.push('/login')}
+        className="px-4 py-1 bg-purple-600 text-white rounded font-KakaoBig hover:bg-purple-700 transition"
       >
-        <div className="w-full px-4 sm:px-6 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 border border-black rounded-sm" />
-            <h1 className="text-xl font-bold text-purple-600">
-              <a href="/">Docverse</a>
-            </h1>
-          </div>
-          <ul className="flex space-x-60 text-gray-700 font-medium">
-            {['공지사항', '도움말', '그룹'].map((text, idx) => (
-              <li key={idx}>
-                <a href="#" className="hover:text-purple-600 transition-colors">{text}</a>
-              </li>
-            ))}
-          </ul>
-          <div className="flex space-x-2">
-            <button className="px-4 py-1 border border-purple-600 text-purple-600 rounded hover:bg-purple-50 transition">로그인</button>
-            <button className="px-4 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition">회원가입</button>
-          </div>
-        </div>
-      </motion.nav>
+        시작하기
+      </button>
+    </div>
+  </div>
+</motion.nav>
+
 
       {/* 메인 영역 */}
       <main className="container mx-auto px-6 pt-28 pb-12 text-center">
         <motion.h2
-          className="text-5xl font-extrabold font-sbaggro text-gray-900 mt-8"
+          className="text-7xl font-extrabold font-SBAggroB text-gray-900"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          text1
+          모든 협업을, 하나의 공간에서
         </motion.h2>
 
         <motion.p
-          className="text-gray-500 mt-4 text-lg font-sbaggro"
+          className="text-gray-500 mt-4 text-lg font-SBAggroB"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 1 }}
         >
-          text2
+          누구나 쉽게, 어디서든 함께
         </motion.p>
 
         <motion.button
           onClick={scrollToGuide}
-          className="mt-6 px-6 py-3 text-base font-semibold text-white bg-purple-600 rounded-lg shadow hover:bg-purple-700 transition-all"
+          className="mt-6 px-6 py-3 text-base font-semibold text-white font-KakaoBig bg-purple-600 rounded-lg shadow hover:bg-purple-700 transition-all"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 1 }}
@@ -119,8 +127,8 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               className="bg-white/60 border border-purple-200 p-6 rounded-lg shadow-sm min-h-[400px] flex flex-col justify-start text-center backdrop-blur-sm"
             >
-              <h3 className="text-xl font-semibold text-purple-700 mb-2">{guide.title}</h3>
-              <p className="text-base text-gray-600 mt-2">{guide.description}</p>
+              <h3 className="text-xl font-KakaoBig text-purple-700 mb-2">{guide.title}</h3>
+              <p className="text-base font-KakaoBig text-gray-600 mt-2">{guide.description}</p>
             </motion.div>
           ))}
         </section>
@@ -151,6 +159,7 @@ export default function Home() {
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
       `}</style>
+    </div>
     </div>
   );
 }

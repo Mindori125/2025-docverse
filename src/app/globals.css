@@ -3,6 +3,50 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'KakaoBigSans-ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2503@1.0/KakaoBigSans-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* 무지개 애니메이션 배경 */
+.rainbow-background {
+  position: fixed;
+  top: -100%;
+  left: -50%;
+  width: 200%;
+  height: 300%;
+  z-index: -1;
+  background: linear-gradient(
+    135deg,
+    #f5d0fe 0%,
+    #e879f9 20%,
+    #c026d3 50%,
+    #e879f9 80%,
+    #f5d0fe 100%
+  );
+  animation: fall-rainbow 10s linear infinite;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+@keyframes fall-rainbow {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100%) rotate(360deg);
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -119,4 +163,12 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.font-SBAggroB {
+  font-family: 'SBAggroB', sans-serif;
+}
+
+.font-KakaoBig {
+  font-family: 'KakaoBigSans-ExtraBold', sans-serif;
 }
