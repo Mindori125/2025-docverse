@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 const guides = [
   { title: '아이디어 공유하기', description: '나만의 생각을 자유롭게 올리고 의견을 받아보세요.' },
   { title: '협업 시작하기', description: '관심 있는 사람들과 프로젝트를 함께 해보세요.' },
-  { title: '자료 모아보기', description: '유용한 개발 자료와 한눈에 정리하세요.' },
+  { title: '자료 모아보기', description: '유용한 개발 자료를 한눈에 정리하세요.' },
   { title: '피드백 주고받기', description: '자유롭게 질문하고 서로 의견을 나눠보세요.' },
 ];
 
@@ -36,8 +36,6 @@ export default function Home() {
   };
 
   return (
-    <div className="relative overflow-hidden">
-     <div className="rainbow-background" />
     <div className="min-h-[300vh] flex flex-col relative overflow-hidden select-none">
       {/* Blob 배경 */}
       <div className="absolute top-0 left-0 -z-10 w-full h-full overflow-hidden">
@@ -159,7 +157,6 @@ export default function Home() {
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
       `}</style>
-    </div>
     </div>
   );
 }

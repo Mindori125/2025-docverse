@@ -3,10 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+
+/**
+ * RegisterPage
+ * -------------
+ * API 명세서에 따라 POST `/api/users/signup/` 엔드포인트를 호출합니다.
+ * Request Body  : { email, password, nickname }
+ * Success       : { message }
+ * - 중복 이메일·닉네임 시 400 → 메시지 alert
+ * - 가입 완료 후 로그인 페이지로 이동
+ */
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,7 +27,9 @@ export default function RegisterPage() {
   const [showTerms, setShowTerms] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
+  /* 헤더 숨김 처리 */
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -26,8 +41,10 @@ export default function RegisterPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /* 회원가입 */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
@@ -36,11 +53,32 @@ export default function RegisterPage() {
       alert('약관에 동의해야 회원가입이 가능합니다.');
       return;
     }
-    console.log('회원가입 정보:', { username, email, password });
+
+    setIsLoading(true);
+
+    try {
+      const res = await axios.post(`${API_BASE}/api/users/signup/`, {
+        email,
+        password,
+        nickname,
+      });
+
+      alert(res.data?.message ?? '회원가입이 완료되었습니다.');
+      router.push('/login');
+    } catch (error: any) {
+      if (error?.response?.status === 400) {
+        alert('이미 사용 중인 이메일 또는 닉네임입니다.');
+      } else {
+        alert('회원가입 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gray-50 pt-20 relative">
+      {/* 네비게이션 바 */}
       <motion.nav
         initial={{ y: 0 }}
         animate={{ y: showNav ? 0 : -100 }}
@@ -56,7 +94,9 @@ export default function RegisterPage() {
           <ul className="flex space-x-60 text-gray-700 font-medium">
             {['공지사항', '도움말', '그룹'].map((text, idx) => (
               <li key={idx}>
-                <a href="#" className="hover:text-purple-600 font-KakaoBig transition-colors">{text}</a>
+                <a href="#" className="hover:text-purple-600 font-KakaoBig transition-colors">
+                  {text}
+                </a>
               </li>
             ))}
           </ul>
@@ -71,25 +111,21 @@ export default function RegisterPage() {
         </div>
       </motion.nav>
 
-      <h2 className="text-4xl font-bold font-KakaoBig text-purple-700 mt-15 mb-4">회원가입</h2>
+      <h2 className="text-4xl font-bold font-KakaoBig text-purple-700 mt-15 mb-4">
+        회원가입
+      </h2>
 
       <div className="flex flex-col items-center justify-center w-full px-4 pb-10">
         <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-2xl">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="아이디"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
-              />
-              <button type="button" className="whitespace-nowrap px-3 py-2 bg-purple-100 text-purple-600 rounded-md border border-purple-300 hover:bg-purple-200">
-                중복 확인
-              </button>
-            </div>
-
+            <input
+              type="text"
+              placeholder="닉네임"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+              className="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
             <input
               type="email"
               placeholder="이메일"
@@ -98,7 +134,6 @@ export default function RegisterPage() {
               required
               className="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
-
             <input
               type="password"
               placeholder="비밀번호"
@@ -116,9 +151,18 @@ export default function RegisterPage() {
               className="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
 
+            {/* 약관 동의 */} 
             <div className="text-sm text-gray-600 mt-2">
               <p>
-                본인은 <button type="button" className="text-purple-600 underline" onClick={() => setShowTerms(true)}>이용약관</button>을 모두 읽고 이해하였으며, 이에 동의합니다.
+                본인은{' '}
+                <button
+                  type="button"
+                  className="text-purple-600 underline"
+                  onClick={() => setShowTerms(true)}
+                >
+                  이용약관
+                </button>
+                을 모두 읽고 이해하였으며, 이에 동의합니다.
               </p>
               <div className="flex mt-2 space-x-4">
                 <label className="flex items-center gap-1">
@@ -127,7 +171,8 @@ export default function RegisterPage() {
                     name="terms"
                     checked={agree === 'agree'}
                     onChange={() => setAgree('agree')}
-                  /> 동의
+                  />{' '}
+                  동의
                 </label>
                 <label className="flex items-center gap-1">
                   <input
@@ -135,16 +180,18 @@ export default function RegisterPage() {
                     name="terms"
                     checked={agree === 'disagree'}
                     onChange={() => setAgree('disagree')}
-                  /> 비동의
+                  />{' '}
+                  비동의
                 </label>
               </div>
             </div>
 
             <button
               type="submit"
-              className="mt-2 p-3 font-KakaoBig bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+              disabled={isLoading}
+              className="mt-2 p-3 font-KakaoBig bg-purple-600 text-white rounded-md hover:bg-purple-700 transition disabled:opacity-50"
             >
-              가입
+              {isLoading ? '가입 중...' : '가입'}
             </button>
           </form>
 
@@ -152,7 +199,7 @@ export default function RegisterPage() {
             이미 계정이 있으신가요?{' '}
             <button
               onClick={() => router.push('/login')}
-              className="text-purple-600 font-semibold hover:underline"
+              className="text-purple-600 font-semibold hover:text-purple-700"
             >
               로그인
             </button>
@@ -160,19 +207,23 @@ export default function RegisterPage() {
         </div>
       </div>
 
+      {/* 이용약관 모달 */}
       {showTerms && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-lg">
             <h3 className="text-lg font-bold mb-4">이용약관</h3>
             <p className="text-sm text-gray-700 h-60 overflow-y-auto">
-              제1조 (목적) 이 약관은 Docverse가 제공하는 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br /><br />
-              제2조 (이용계약의 성립) 이용자는 본 약관에 동의함으로써 서비스 이용 계약이 성립됩니다. 회사는 이용자에게 서비스를 제공하며, 이용자는 관련 법령과 본 약관을 준수해야 합니다.<br /><br />
-              제3조 (개인정보 보호) 회사는 이용자의 개인정보를 중요시하며, 관련 법령에 따라 보호하고 처리합니다. 개인정보 처리방침은 별도로 제공됩니다.<br /><br />
-              제4조 (서비스 이용 제한) 이용자는 다음 각 호의 행위를 하여서는 아니 되며, 위반 시 서비스 이용이 제한되거나 계정이 삭제될 수 있습니다: 타인의 개인정보 도용, 불법 정보 게시, 시스템 해킹 등.<br /><br />
-              제5조 (계약 해지) 이용자가 회원 탈퇴를 원하는 경우 언제든지 회사에 요청할 수 있으며, 회사 또한 본 약관에 따라 계약을 해지할 수 있습니다.
+              제1조 (목적) 이 약관은 Docverse가 제공하는 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br />
+              <br />제2조 (이용계약의 성립) 이용자는 본 약관에 동의함으로써 서비스 이용 계약이 성립됩니다. 회사는 이용자에게 서비스를 제공하며, 이용자는 관련 법령과 본 약관을 준수해야 합니다.<br />
+              <br />제3조 (개인정보 보호) 회사는 이용자의 개인정보를 중요시하며, 관련 법령에 따라 보호하고 처리합니다. 개인정보 처리방침은 별도로 제공됩니다.<br />
+              <br />제4조 (서비스 이용 제한) 이용자는 다음 각 호의 행위를 하여서는 아니 되며, 위반 시 서비스 이용이 제한되거나 계정이 삭제될 수 있습니다: 타인의 개인정보 도용, 불법 정보 게시, 시스템 해킹 등.<br />
+              <br />제5조 (계약 해지) 이용자가 회원 탈퇴를 원하는 경우 언제든지 회사에 요청할 수 있으며, 회사 또한 본 약관에 따라 계약을 해지할 수 있습니다.
             </p>
             <div className="mt-4 text-right">
-              <button onClick={() => setShowTerms(false)} className="text-purple-600 font-medium hover:underline">
+              <button
+                onClick={() => setShowTerms(false)}
+                className="text-purple-600 font-medium hover:underline"
+              >
                 닫기
               </button>
             </div>

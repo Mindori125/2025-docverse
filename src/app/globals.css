@@ -1,8 +1,10 @@
+/* 기존 Tailwind 및 애니메이션 import 유지 */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
+/* 폰트 설정 */
 @font-face {
   font-family: 'SBAggroB';
   src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
@@ -17,36 +19,34 @@
   font-style: normal;
 }
 
-/* 무지개 애니메이션 배경 */
+/* 새로운 무지개 애니메이션 배경 */
 .rainbow-background {
   position: fixed;
-  top: -100%;
+  top: -50%;
   left: -50%;
-  width: 200%;
-  height: 300%;
+  width: 200vw;
+  height: 200vh;
   z-index: -1;
-  background: linear-gradient(
-    135deg,
-    #f5d0fe 0%,
-    #e879f9 20%,
-    #c026d3 50%,
-    #e879f9 80%,
-    #f5d0fe 100%
-  );
-  animation: fall-rainbow 10s linear infinite;
-  opacity: 0.3;
+  background: radial-gradient(circle at center,
+    #7e22ce 0%,        /* 진한 보라 */
+    #a855f7 40%,       /* 중간 보라 */
+    #d8b4fe 80%,       /* 밝은 보라 */
+    transparent 100%); /* 투명하게 퍼짐 */
+  animation: rainbow-fall 15s linear infinite;
   pointer-events: none;
+  opacity: 0.4;
 }
 
-@keyframes fall-rainbow {
+@keyframes rainbow-fall {
   0% {
-    transform: translateY(-100%) rotate(0deg);
+    transform: translate(50vw, -100vh);
   }
   100% {
-    transform: translateY(100%) rotate(360deg);
+    transform: translate(-50vw, 100vh);
   }
 }
 
+/* 사용자 정의 테마 설정 유지 */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -87,6 +87,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* 라이트/다크 모드 설정 유지 */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
